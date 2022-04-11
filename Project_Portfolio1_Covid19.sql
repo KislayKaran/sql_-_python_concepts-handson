@@ -77,11 +77,6 @@ group by Location
 order by 2 desc
 
 --Break it down by Continents
---Select continent, MAX(cast(total_deaths as int)) as total_death_counts
---From PortfolioProject..CovidDeaths
---where continent is not null
---group by continent
---order by 2 desc
 
 Select continent, SUM(cast(new_deaths as int)) as total_death_counts
 From PortfolioProject..CovidDeaths
@@ -107,16 +102,6 @@ group by Location
 order by 3 
 
 
-
-
-
---Select Location,
---SUM(total_death_counts)  OVER (Partition by Location Order by Location) as Roll_death_count
---From PortfolioProject..CovidDeaths
---group by continent
---Where total_death_counts IN ( Select Location, MAX(cast(total_deaths as int)) as total_death_counts
---From PortfolioProject..CovidDeaths
---Where continent = 'Asia')
 
 
 --Global Data of new cases and new deaths on daily basis
