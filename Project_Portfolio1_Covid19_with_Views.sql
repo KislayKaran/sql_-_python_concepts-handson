@@ -7,15 +7,16 @@ From Portfolio_Project.dbo.CovidVaccinations
 order by 3,4
 
 
-Drop View CasesPoulationDeaths 
+Drop View daily_CasesPoulationDeaths 
 
-Create View CasesPoulationDeaths as 
+Create View daily_CasesPoulationDeaths as 
 Select continent,Location,date,total_cases,new_cases,total_deaths,population
 From Portfolio_Project..CovidDeaths
-Where continent is not null
+Where continent is not null and Location not in ('World','European Union','International')
 --order by 2,3
+
 Select *
-From CasesPoulationDeaths
+From daily_CasesPoulationDeaths
 Where continent is not null
 order by 2,3
 
@@ -25,26 +26,38 @@ order by 2,3
 Drop View World_DeathPercentage 
 
 Create View World_DeathPercentage as 
-Select continent,Location,date,total_cases,total_deaths,(total_deaths/total_cases)*100 as DeathPercentage
+Select sum(new_cases) as Total_Cases,sum(cast(new_deaths as int)) as Total_Deaths,sum(cast(new_deaths as int))/sum(new_cases)*100 as Global_DeathPercentage
 From Portfolio_Project..CovidDeaths
+Where continent is not null and Location not in ('World','European Union','International')
 --order by 1,2
+
 
 Select *
 From World_DeathPercentage
-Where continent is not null
 order by 1,2
 
+Create View CountryWise_DeathPercentage as 
+Select Location,sum(new_cases) as Total_Cases,sum(cast(new_deaths as int)) as Total_Deaths,sum(cast(new_deaths as int))/sum(new_cases)*100  as Death_Percentage
+From Portfolio_Project..CovidDeaths
+Where continent is not null and Location not in ('World','European Union','International')
+Group by location
+--order by 2 desc
 
-Drop View India_DeathPercentage 
+Select *
+From CountryWise_DeathPercentage
+order by 2 desc
 
-Create View India_DeathPercentage as
+
+Drop View dailyIndia_DeathPercentage 
+
+Create View dailyIndia_DeathPercentage as
 Select Location,date,total_cases,total_deaths,(total_deaths/total_cases)*100 as DeathPercentage
 From Portfolio_Project..CovidDeaths
 Where Location='India'
 --order by 2
 
 Select *
-From India_DeathPercentage
+From dailyIndia_DeathPercentage
 order by 2
 
 --Looking at total_cases Vs Population
@@ -53,14 +66,15 @@ order by 2
 Drop View World_TotalCasesVsPopulation 
 
 Create View World_TotalCasesVsPopulation as
-Select continent,Location,date,population,total_cases,(total_cases/population)*100 as ppln_prcnt_got_Covid
+Select continent,Location,population,max(total_cases)as total_cases,(max(total_cases)/population)*100 as ppln_prcnt_got_Covid
 From Portfolio_Project..CovidDeaths
---order by 1,2
+Where continent is not null and Location not in ('World','European Union','International')
+Group by continent,Location,population
+--order by 3 desc
 
 Select *
 From World_TotalCasesVsPopulation
-Where continent is not null
-order by 1,2
+order by 3 desc
 
 
 Drop View India_TotalCasesVsPopulation
@@ -99,9 +113,9 @@ From USA_Hospital_ICU_Admn
 order by 2
 
 
-Drop View USA_Hospital_ICU_Deaths
+Drop View USA_HospPatients_ICU_Deaths
 
-Create View USA_Hospital_ICU_Deaths as
+Create View USA_HospPatients_ICU_Deaths as
 Select continent,Location,date,population,
 hosp_patients as Currently_hospital_patients ,
 icu_patients as Currently_patients_in_icu,
@@ -113,7 +127,7 @@ Where  location='United States' and continent is not null and hosp_patients is n
 --order by 2,3
 
 Select *
-From USA_Hospital_ICU_Deaths
+From USA_HospPatients_ICU_Deaths
 order by 2,3
 
 
@@ -124,8 +138,10 @@ Drop View InfectionRate_CasesVsPopulation
 Create View InfectionRate_CasesVsPopulation as
 Select Location,population,Max(total_cases) as highest_infection_count,Max((total_cases/population)*100) as percent_ppln_infected
 From Portfolio_Project..CovidDeaths
+Where continent is not null and Location not in ('World','European Union','International')
 group by Location,population 
 --order by 4 desc
+
 Select *
 From InfectionRate_CasesVsPopulation
 order by 4 desc
@@ -137,7 +153,7 @@ Drop View total_death_counts
 Create View total_death_counts as
 Select Location,Max(cast(total_deaths as int)) as total_death_counts
 From Portfolio_Project..CovidDeaths
-where continent is not null
+where continent is not null and Location not in ('World','European Union','International')
 group by Location
 --order by 2 desc
 
@@ -151,9 +167,10 @@ Drop View ContinentWise_death_counts
 Create View ContinentWise_death_counts as
 Select continent, SUM(cast(new_deaths as int)) as total_death_counts
 From Portfolio_Project..CovidDeaths
-where continent is not null
+where continent is not null and Location not in ('World','European Union','International')
 group by continent
 --order by 2 desc
+
 Select *
 From ContinentWise_death_counts
 order by 2 desc
@@ -194,7 +211,7 @@ Create View DailyGlobal_DeathsVsCases as
 Select date,SUM(new_cases) as DailyGlobal_TotalCases, SUM(cast(new_deaths as int)) as DailyGlobal_TotalDeaths,
 SUM(cast(new_deaths as int))/SUM(new_cases)*100 as Daily_DeathPercentage
 From Portfolio_Project..CovidDeaths
-Where continent is not null
+Where continent is not null and Location not in ('World','European Union','International')
 group by date
 --order by 1,2
 
@@ -202,15 +219,15 @@ Select *
 From DailyGlobal_DeathsVsCases
 order by 1,2
 
---Total_Valuue of covid cases and covid deaths till April 05 2022
+--Total_Value of covid cases and covid deaths till April 05 2022
 
 Drop View Total_CasesAndDeaths_till_Apr5_2022
 
 Create View Total_CasesAndDeaths_till_Apr5_2022 as
 Select SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths,
-SUM(cast(new_deaths as int))/SUM(new_cases)*100 as Daily_DeathPercentage
+SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage
 From Portfolio_Project..CovidDeaths
-Where continent is not null
+Where continent is not null and Location not in ('World','European Union','International')
 --order by 1,2
 
 Select *
@@ -246,7 +263,7 @@ join Portfolio_Project..CovidVaccinations v
 on d.location=v.location
 and d.date=v.date
 Where d.continent is not null and v.new_tests is not null and v.total_tests is not null
-and d.new_cases is not null and d.total_cases is not null
+and d.new_cases is not null and d.total_cases is not null and d.Location not in ('World','European Union','International')
 --order by 1,3
 
 Select *
@@ -255,12 +272,12 @@ order by 1,3
 
 --Looking at total populations Vs daily_vaccinations
 
-Select d.continent,d.location,d.date,d.population,v.new_vaccinations
+Select d.continent,d.Location,d.date,d.population,v.new_vaccinations
 From Portfolio_Project..CovidDeaths d
 join Portfolio_Project..CovidVaccinations v
 on d.location=v.location
 and d.date=v.date
-Where d.continent is not null
+Where d.continent is not null and d.Location not in ('World','European Union','International')
 order by 2,3
 
 
@@ -268,13 +285,13 @@ order by 2,3
 Drop View DailyCumulativeVaccinations
 
 Create View DailyCumulativeVaccinations as
-Select d.continent,d.location,d.date,d.population, v.new_vaccinations,
+Select d.continent,d.Location,d.date,d.population, v.new_vaccinations,
 SUM(cast(v.new_vaccinations as bigint)) OVER (Partition by d.Location Order by d.Location,d.date) as Rolling_people_vaccinated
 From Portfolio_Project..CovidDeaths d
 join Portfolio_Project..CovidVaccinations v
 on d.location=v.location
 and d.date=v.date
-Where d.continent is not null
+Where d.continent is not null and d.Location not in ('World','European Union','International')
 --order by 2,3
 
 Select *
@@ -360,7 +377,7 @@ From Portfolio_Project..CovidDeaths d
 join Portfolio_Project..CovidVaccinations v
 on d.location=v.location
 and d.date=v.date
-Where d.continent is not null and v.new_vaccinations is not null
+Where d.continent is not null and v.new_vaccinations is not null and d.Location not in ('World','European Union','International')
 --order by 2,3
 
 Drop View PopulationVaccinated
