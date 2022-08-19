@@ -106,7 +106,7 @@ FROM employees e) x
 where x.rnk<4;   
 
 
-# DENSE RANK : dense_rank():  Over here it does skip the Rank for the same/duplicate values.
+# DENSE RANK : dense_rank():  Over here it does not skip the Rank for the same/duplicate values.
 
 SELECT * FROM(                
 SELECT e.*,
