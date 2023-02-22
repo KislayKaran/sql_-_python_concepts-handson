@@ -98,6 +98,9 @@ JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal;
 -- These are of two types: (a) Multiple Columns and Multiple Rows
 --                         (b) Single Column Multiple Rows
 
+-- A subquery can also return multiple columns or multiple rows. 
+-- Such subqueries can be used with operators IN, NOT IN,  EXISTS, ALL, or ANY/SOME.
+
 -- Q. Find the employees which aearn the highest salary in each dept. (GROUP BY)
 -- (1) Find the highest Salary in each Dept.
 -- (2) Compare the Result of (1st) o/p with the entire employee table.alter
@@ -142,8 +145,17 @@ WHERE dept_name NOT IN (SELECT distinct(dept_name)
 
 
 -- Finding the avg. salary of each dept.
+SELECT dept_name,avg(salary)
+FROM employees
+GROUP BY dept_name;
 
-
+-- Comparing the salary of the employees with the avg. salary of their dept.
+SELECT emp_name,dept_name,salary
+FROM employees e1 
+WHERE salary > (SELECT avg(salary) as avg_sal
+                FROM employees e2
+                WHERE e2.dept_name = e1.dept_name
+                GROUP BY dept_name) ;
 -- Reffereing a column in a sub-query which is coming from Outer-query
 -- the Sub-query will be dependent on every single value that will be returned from the Outer Query.
 
@@ -151,11 +163,6 @@ WHERE dept_name NOT IN (SELECT distinct(dept_name)
 -- Every Single record processed from the Outer-Query it will execute the Inner-Query.
 
 -- First the Outer Query Execution followed up by the Inner-Query.
-
-SELECT avg(salary) 
-FROM employees e1
-WHERE salary> (SELECT avg(salary) FROM employees e2
-               WHERE e2.dept_name = e1.dept_name);
                
 -- For each row value of employees e1 the dept_name will get returned over here.
 -- Then the Inner-Query will get executed for getting the avg. salary for the e1.dept_name.
@@ -164,7 +171,6 @@ WHERE salary> (SELECT avg(salary) FROM employees e2
 -- Based on no of records processed by the Outer-Query that many no of times the Subquery(corelated) will get executed.
 
 -- Corelated Sub-Query will have some join Condition based on some column that is used from the Outer-Query.
-
 
 -- Q. Find the department who do not have employees (solving it using Corelated Sub-Queries)
 
