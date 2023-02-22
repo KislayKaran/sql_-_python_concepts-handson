@@ -82,16 +82,17 @@ WHERE emp_name = 'Mohan'
 );
 
 SELECT * FROM employees e
-JOIN (SELECT avg(salary) sal from employees) avg_sal; 
+JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal; 
 
 -- Here SQL treats the result returned from the Subquery as a Seperate table by itself.
 -- i.e. Sal Column with avg_sal gets added to the final result.
 
--- But with e.* ----> that extra 'sal' column will not be added.
--- Table will be represented in itd original form and set of columns.
+-- But with e.* ----> that extra 'avg_sal' column will not be added.
+-- Table will be represented in its original form and set of columns.
 
 SELECT e.* FROM employees e
-JOIN (SELECT avg(salary) sal from employees) avg_sal;
+JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal;
+
 
 -- (2) Multiple Row Subqueries: Returns the Multiple Rows
 -- These are of two types: (a) Multiple Columns and Multiple Rows
