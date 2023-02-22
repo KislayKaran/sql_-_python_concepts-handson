@@ -70,6 +70,16 @@ WHERE salary > (SELECT avg(salary) from employees);
 -- (3) Correlated Subqueries
 
 -- (1) Scalar Subqueries : returns only one Row and only One Column.
+-- The simplest subquery returns exactly one column and exactly one row.
+--  It can be used with comparison operators =, <, <=, >, or >=.
+
+-- This query finds emp_name with the same salary as Mohan:
+SELECT emp_name FROM employees
+WHERE salary = (
+SELECT salary
+FROM employees
+WHERE emp_name = 'Mohan'
+);
 
 SELECT * FROM employees e
 JOIN (SELECT avg(salary) sal from employees) avg_sal; 
