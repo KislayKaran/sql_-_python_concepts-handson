@@ -11,6 +11,40 @@ INSERT INTO departments VALUES('4','Finance','Mumbai');
 INSERT INTO departments VALUES('5','Marketing','Bangalore');
 INSERT INTO departments VALUES('6','Sales','Mumbai');
 
+SELECT * FROM departments;
+
+CREATE TABLE employees(
+emp_id int(3) NOT NULL PRIMARY KEY,
+emp_name varchar(20) NOT NULL,
+dept_name varchar(20) NOT NULL,
+salary int(8) NOT NULL);
+
+INSERT INTO employees VALUES('101','Mohan','Admin','4000');
+INSERT INTO employees VALUES('102','Rajkumar','HR','3000');
+INSERT INTO employees VALUES('103','Akbar','IT','4000');
+INSERT INTO employees VALUES('104','Dorvin','Finance','6500');
+INSERT INTO employees VALUES('105','Rohit','HR','3000');
+INSERT INTO employees VALUES('106','Rajesh','Finance','5000');
+INSERT INTO employees VALUES('107','Preet','HR','7000');
+INSERT INTO employees VALUES('108','Maryam','Admin','4000');
+INSERT INTO employees VALUES('109','Sanjay','IT','6500');
+INSERT INTO employees VALUES('110','Vasudha','IT','7000');
+INSERT INTO employees VALUES('111','Melinda','IT','3000');
+INSERT INTO employees VALUES('112','Komal','IT','3000');
+INSERT INTO employees VALUES('113','Gautham','Admin','3000');
+INSERT INTO employees VALUES('114','Manisha','HR','3000');
+INSERT INTO employees VALUES('115','Chandni','IT','4500');
+INSERT INTO employees VALUES('116','Satya','Finance','6500');
+INSERT INTO employees VALUES('117','Adarsh','HR','3500');
+INSERT INTO employees VALUES('118','Tejaswi','Finance','5500');
+INSERT INTO employees VALUES('119','Cory','HR','8000');
+INSERT INTO employees VALUES('120','Monica','Admin','5000');
+INSERT INTO employees VALUES('121','Rosalin','IT','6000');
+INSERT INTO employees VALUES('122','Ibrahim','IT','8000');
+INSERT INTO employees VALUES('123','Vikram','IT','8000');
+INSERT INTO employees VALUES('124','Dhiraj','IT','11000');
+
+SELECT * FROM employees;
 
 -- Sub Queries also called as an Inner Query or Nested Query within another SQL Query
 -- and embedded within 'WHERE' Clause.
@@ -21,9 +55,9 @@ INSERT INTO departments VALUES('6','Sales','Mumbai');
 
 -- RULES:
 -- Can be used with SELECT, INSERT, UPDATE & DELETE statements
--- along with the operators like =,<,>,>=,<=,IN .
+-- along with the operators like =,<,>,>=,<= .
 
--- (1) A Subquery can have only 1 Column in the SELECT Claue, unless multiple Columns are in the main Query
+-- (1) A Subquery can have only 1 Column in the SELECT Clause, unless multiple Columns are in the main Query
 --     for the Subquery to compare its selected Columns.
 -- (2) An ORDER BY cannot be used in a subquery ,
 --        GROUP BY can be used to perform the same role as ORDER BY in a Subquery.
@@ -35,7 +69,7 @@ INSERT INTO departments VALUES('6','Sales','Mumbai');
     
     
 SELECT * FROM employees;
-SELECT * FROM departments; 
+ 
 
 describe departments;
 
@@ -52,7 +86,7 @@ SELECT avg(salary) from employees;
 -- Instead
 
 SELECT * FROM employees 
-WHERE salary > (SELECT avg(salary) from employees); 
+WHERE salary > (SELECT avg(salary) from employees);
 
 -- OUTER Query is using the INNER Query to fetch the record and filter it and
 --  then get the final reseult using and the OUTER Query.
@@ -73,7 +107,7 @@ WHERE salary > (SELECT avg(salary) from employees);
 -- The simplest subquery returns exactly one column and exactly one row.
 --  It can be used with comparison operators =, <, <=, >, or >=.
 
--- This query finds emp_name with the same salary as Mohan:
+-- This query finds emp_name with the same salary as 'Mohan':
 SELECT emp_name FROM employees
 WHERE salary = (
 SELECT salary
@@ -82,7 +116,8 @@ WHERE emp_name = 'Mohan'
 );
 
 SELECT * FROM employees e
-JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal; 
+JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal
+ON e.salary> avg_sal.avg_sal; 
 
 -- Here SQL treats the result returned from the Subquery as a Seperate table by itself.
 -- i.e. Sal Column with avg_sal gets added to the final result.
@@ -91,7 +126,9 @@ JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal;
 -- Table will be represented in its original form and set of columns.
 
 SELECT e.* FROM employees e
-JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal;
+JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal
+ON e.salary> avg_sal.avg_sal; 
+
 
 
 -- (2) Multiple Row Subqueries: Returns the Multiple Rows
@@ -99,11 +136,11 @@ JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal;
 --                         (b) Single Column Multiple Rows
 
 -- A subquery can also return multiple columns or multiple rows. 
--- Such subqueries can be used with operators IN, NOT IN,  EXISTS, ALL, or ANY/SOME.
+-- Such subqueries can be used with operators IN, NOT IN, EXISTS, ALL, or ANY.
 
--- Q. Find the employees which aearn the highest salary in each dept. (GROUP BY)
+-- Q. Find the employees which earn the highest salary in each dept. (GROUP BY)
 -- (1) Find the highest Salary in each Dept.
--- (2) Compare the Result of (1st) o/p with the entire employee table.alter
+-- (2) Compare the Result of (1st) o/p with the entire employee table.alter 
 
 SELECT dept_name, max(salary)
 FROM employees
@@ -114,34 +151,34 @@ WHERE (dept_name,salary)
 IN (SELECT dept_name, max(salary)
 	FROM employees
     GROUP BY dept_name);
-    
+ 
+
 -- Q. Which are the departments (dept_name) with no employees 
--- i.e. dept with no emp_names in the employee table.alter
+-- i.e. dept with no emp_names in the employee table.
 
 SELECT distinct(dept_name) 
 FROM employees;   -- as an INNER query returns only 1 column.
 
-SELECT * FROM departments
+SELECT dept_name FROM departments
 WHERE dept_name NOT IN (SELECT distinct(dept_name) 
 	                    FROM employees); 
                         
-                        -- To compare the values 'dept_name NOT IN'
+-- To compare the values 'dept_name NOT IN'
                         
 -- Showing the dept columns from the dept_table by which the dept_names are missing from the employees table.
 
--- Values of dept_name  from departments table which are not present as the dept_name values in the 
--- employees table ( missing from the employees table )      
+-- Values of dept_name  from departments table which are not present as the dept_name values in the employees table ( missing from the employees table)      
 
 
 
 -- (3) Corelated Subquerries: Sub Query related to the OUTER Query. 
---                             Processing of the Sub-Query depends upon the values returned from the  OUTER Query.
---                             Cannot execute itself.
+--                            Processing of the Sub-Query depends upon the values returned from the  OUTER Query.
+--                            Cannot execute itself.
 
--- Q. Find the emploees in each department who earn more than the avg. salary in that department.
+-- Q. Find the employees in each department who earn more than the avg. salary in that department.
 
 -- We need to find the avg. salary in each dept. 
--- And then compare the salary of the employees with the avg. salary of their dept. from the employee table.
+-- And then compare the salary of the employees e1 with the avg. salary of each dept. from the employee table e2.
 
 
 -- Finding the avg. salary of each dept.
@@ -150,7 +187,8 @@ FROM employees
 GROUP BY dept_name;
 
 -- Comparing the salary of the employees with the avg. salary of their dept.
-SELECT emp_name,dept_name,salary
+
+SELECT e1.*
 FROM employees e1 
 WHERE salary > (SELECT avg(salary) as avg_sal
                 FROM employees e2
@@ -160,21 +198,29 @@ WHERE salary > (SELECT avg(salary) as avg_sal
 -- the Sub-query will be dependent on every single value that will be returned from the Outer Query.
 
 -- This Subquery is dependent on 
--- Every Single record processed from the Outer-Query it will execute the Inner-Query.
+-- Every Single record processed from the Outer-Query and then it will execute the Inner-Query.
 
--- First the Outer Query Execution followed up by the Inner-Query.
+-- First the Outer Query Execution takes place then followed up by the execution of Inner-Query
+-- for  every individual records returned from the Outer-Query.
                
 -- For each row value of employees e1 the dept_name will get returned over here.
 -- Then the Inner-Query will get executed for getting the avg. salary for the e1.dept_name.
--- For every single employee record from e1 Outer-Query , the SQL will process the Sub_Query once.
+-- For every single employee record from e1 Outer-Query , the SQL will process the Sub_Query every time.
 
--- Based on no of records processed by the Outer-Query that many no of times the Subquery(corelated) will get executed.
+ -- Based on no of records processed by the Outer-Query that many no of times the Subquery(corelated) will get executed.
 
 -- Corelated Sub-Query will have some join Condition based on some column that is used from the Outer-Query.
 
+-- Another way is with the help of JOINS
+ 
+SELECT e.*,avg_sal.avg_dept_sal FROM employees e
+JOIN (SELECT dept_name, avg(salary)as avg_dept_sal from employees GROUP BY dept_name) avg_sal
+ON e.dept_name = avg_sal.dept_name
+WHERE e.salary> avg_sal.avg_dept_sal;
+
 -- Q. Find the department who do not have employees (solving it using Corelated Sub-Queries)
 
-SELECT * FROM departments d
+SELECT d.dept_name FROM departments d
 WHERE NOT EXISTS ( SELECT * FROM employees e
                    WHERE e.dept_name = d.dept_name);
                
@@ -220,11 +266,11 @@ INSERT INTO sales VALUES ('4','Apple Store 4', 'MacBook Pro 16', '1','3500');
 SELECT * FROM sales;
 
 
--- Q. Find thr Stores whose Sales were better than the avg. Sales across all the Stores.
+-- Q. Find the Stores whose Sales were better than the avg. Sales across all the Stores.
 
 -- (1) Total Sales for each Store
 -- (2) Avg Sales for all the Stores .....( Not for the entire sales data, Store wise)
--- (3) Compare (1) & (2).alter
+-- (3) Compare (1) & (2).
 
 -- (1)
 		SELECT store_name, sum(price) as total_sales FROM sales 
@@ -241,11 +287,11 @@ SELECT * FROM sales;
         FROM (SELECT store_name, sum(price) as total_sales 
               FROM sales 
 		      GROUP BY store_name) sales_x
-        JOIN (SELECT avg(total_sales) as sales
+        JOIN (SELECT avg(total_sales) as avg_sales
               FROM (SELECT store_name, sum(price) as total_sales
                     FROM sales 
-		            GROUP BY store_name) y) avg_sales
-              ON sales_x.total_sales> avg_sales.sales;               
+		            GROUP BY store_name) sales_x) avg_sales
+              ON sales_x.total_sales> avg_sales.avg_sales;               
            
 
 -- To reduce the code length , we need to do an initialization of the sales_x (query)  using with clause 
@@ -256,9 +302,9 @@ WITH sales_x AS
  FROM sales 
  GROUP BY store_name)
  SELECT * FROM  sales_x
-        JOIN (SELECT avg(total_sales) as sales
-              FROM sales_x y) avg_sales
-              ON sales_x.total_sales> avg_sales.sales;  
+        JOIN (SELECT avg(total_sales) as avg_sales
+              FROM sales_x ) avg_sales
+              ON sales_x.total_sales> avg_sales.avg_sales;  
               
 
 
@@ -295,7 +341,8 @@ FROM sales
 GROUP BY store_name;
 
 -- (2)
-SELECT avg(quantity) FROM sales;
+SELECT avg(quantity) 
+FROM sales;
 
 -- (1)+(2)
 SELECT store_name, sum(quantity)
