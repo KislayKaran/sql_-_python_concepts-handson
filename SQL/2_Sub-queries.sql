@@ -50,7 +50,7 @@ SELECT * FROM employees;
 -- and embedded within 'WHERE' Clause.
 
 -- A Sub-Query is used to return the data that will be used in the main query 
--- as a condition to further restrict the dta to be retrieved.
+-- as a condition to further restrict the data to be retrieved.
 
 
 -- RULES:
@@ -89,7 +89,7 @@ SELECT * FROM employees
 WHERE salary > (SELECT avg(salary) from employees);
 
 -- OUTER Query is using the INNER Query to fetch the record and filter it and
---  then get the final reseult using and the OUTER Query.
+--  then get the final reseult using the OUTER Query.
 
 -- INNER Query can be executed on its own ,
 -- does not have any dependencies on the OUTER Query.
@@ -109,11 +109,9 @@ WHERE salary > (SELECT avg(salary) from employees);
 
 -- This query finds emp_name with the same salary as 'Mohan':
 SELECT emp_name FROM employees
-WHERE salary = (
-SELECT salary
-FROM employees
-WHERE emp_name = 'Mohan'
-);
+WHERE salary = (SELECT salary
+                FROM employees
+                WHERE emp_name = 'Mohan');
 
 SELECT * FROM employees e
 JOIN (SELECT avg(salary) as avg_sal from employees) avg_sal
