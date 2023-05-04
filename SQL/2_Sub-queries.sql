@@ -147,7 +147,7 @@ GROUP BY dept_name;
 SELECT * FROM employees
 WHERE (dept_name,salary)
 IN (SELECT dept_name, max(salary)
-	FROM employees
+    FROM employees
     GROUP BY dept_name);
  
 
@@ -159,7 +159,7 @@ FROM employees;   -- as an INNER query returns only 1 column.
 
 SELECT dept_name FROM departments
 WHERE dept_name NOT IN (SELECT distinct(dept_name) 
-	                    FROM employees); 
+	                FROM employees); 
                         
 -- To compare the values 'dept_name NOT IN'
                         
@@ -276,19 +276,19 @@ SELECT * FROM sales;
 
 -- (2)
 		SELECT avg(total_sales)
-        FROM (SELECT store_name, sum(price) as total_sales FROM sales 
-		     GROUP BY store_name) average;
+                FROM (SELECT store_name, sum(price) as total_sales FROM sales 
+		      GROUP BY store_name) average;
              
 -- (1) + (2)  
 -- Joining (1) & (2)......Join sales_x & avg_sales
-		SELECT *
+	SELECT *
         FROM (SELECT store_name, sum(price) as total_sales 
               FROM sales 
-		      GROUP BY store_name) sales_x
+	      GROUP BY store_name) sales_x
         JOIN (SELECT avg(total_sales) as avg_sales
               FROM (SELECT store_name, sum(price) as total_sales
                     FROM sales 
-		            GROUP BY store_name) sales_x) avg_sales
+		    GROUP BY store_name) sales_x) avg_sales
               ON sales_x.total_sales> avg_sales.avg_sales;               
            
 
@@ -299,10 +299,11 @@ WITH sales_x AS
 (SELECT store_name, sum(price) as total_sales 
  FROM sales 
  GROUP BY store_name)
+ 
  SELECT * FROM  sales_x
-        JOIN (SELECT avg(total_sales) as avg_sales
-              FROM sales_x ) avg_sales
-              ON sales_x.total_sales> avg_sales.avg_sales;  
+ JOIN (SELECT avg(total_sales) as avg_sales
+       FROM sales_x ) avg_sales
+ ON sales_x.total_sales> avg_sales.avg_sales;  
               
 
 
@@ -312,18 +313,18 @@ WITH sales_x AS
 -- i.e. it should return only one result with 1 row and 1 column 
 
 SELECT *, 
-      ( CASE WHEN salary > ( SELECT avg(salary) FROM employees)
-			 THEN 'Higher than average'
-             ELSE null
-        END) AS Remarks
- FROM employees;       
+( CASE WHEN salary > ( SELECT avg(salary) FROM employees)
+       THEN 'Higher than average'
+       ELSE null
+   END) AS Remarks
+FROM employees;       
  
  
  -- Try Avoiding the above Query .....Instead use the modified version.
  -- The below Query Shows both the Average Salary and the Remarks column.
 SELECT *, 
       ( CASE WHEN salary > ( SELECT avg(salary) FROM employees)
-			 THEN 'Higher than average'
+	     THEN 'Higher than average'
              ELSE null
         END) AS Remarks
  FROM employees
@@ -382,7 +383,7 @@ SELECT * FROM emp_bkp;
 
 UPDATE employees e
 SET salary=( SELECT max(salary) + (max(salary)*0.1) 
-			 FROM emp_bkp eb
+	     FROM emp_bkp eb
              WHERE eb.dept_name = e.dept_name
              GROUP BY eb.dept_name)
 WHERE e.dept_name IN ( SELECT dept_name
@@ -400,5 +401,5 @@ DELETE FROM departments
 WHERE dept_name IN ( SELECT dept_name
                     FROM ddepartments department 
                     WHERE NOT EXISTS (SELECT * FROM employees e
-									  WHERE e.dept-name=d.dept_name)
+				      WHERE e.dept-name=d.dept_name)
                     );                  
